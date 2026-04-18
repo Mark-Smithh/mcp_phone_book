@@ -1,6 +1,6 @@
-# Congregation Phone Book MCP Server
+# Phone Book MCP Server
 
-An MCP (Model Context Protocol) server that lets Claude look up congregation member phone numbers by name.
+An MCP (Model Context Protocol) server that lets Claude look up phone numbers by name.
 
 ## Requirements
 
