@@ -1,6 +1,6 @@
 # Phone Book MCP Server
 
-An MCP (Model Context Protocol) server that lets Claude look up phone numbers by name.
+An MCP (Model Context Protocol) server that lets Claude look up phone numbers by name, or look up who owns a given phone number.
 
 ## Requirements
 
@@ -50,6 +50,12 @@ Ask Claude naturally:
 > "I need the phone number for Mark Smith."
 
 Claude will return the available home, mobile, and work numbers for that person.
+
+> "Who's phone number is this? 323-574-2262"
+
+> "Who's phone number ends in 2262?"
+
+Claude will search all phone fields and return the matching contact(s). Partial lookups using just the last few digits are supported.
 
 ## CSV format
 
