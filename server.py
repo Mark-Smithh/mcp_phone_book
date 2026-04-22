@@ -58,5 +58,38 @@ def lookup_contact(first_name: str, last_name: str) -> str:
     return "\n\n".join(lines)
 
 
+@mcp.tool()
+def reverse_lookup(phone_number: str) -> str:
+    """Look up who owns a phone number, or find contacts whose number ends with the given digits.
+
+    Args:
+        phone_number: The phone number or partial number (e.g. last 4 digits) to search for.
+    """
+    contacts = load_contacts()
+    digits = "".join(ch for ch in phone_number if ch.isdigit())
+
+    phone_fields = ["PhoneHome", "PhoneMobile", "PhoneWork"]
+    matches = []
+    for c in contacts:
+        for field in phone_fields:
+            raw = c.get(field, "").strip()
+            if not raw:
+                continue
+            contact_digits = "".join(ch for ch in raw if ch.isdigit())
+            if contact_digits == digits or contact_digits.endswith(digits):
+                matches.append((c, field, raw))
+                break
+
+    if not matches:
+        return f"No contact found with a phone number matching '{phone_number}'."
+
+    lines = []
+    for c, field, number in matches:
+        label = {"PhoneHome": "Home", "PhoneMobile": "Mobile", "PhoneWork": "Work"}[field]
+        lines.append(f"**{c['FirstName']} {c['LastName']}** — {label}: {number}")
+
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
     mcp.run()
