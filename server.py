@@ -16,24 +16,56 @@ def load_contacts() -> list[dict]:
 
 
 @mcp.tool()
-def lookup_contact(first_name: str, last_name: str) -> str:
-    """Look up a phone numbers by first and last name.
+def lookup_contact(first_name: str, last_name: str = "") -> str:
+    """Look up phone numbers by first and last name. Last name is optional.
 
     Args:
         first_name: The person's first name.
-        last_name: The person's last name.
+        last_name: The person's last name. If omitted, returns suggestions for all contacts with that first name.
     """
+    _SUFFIXES = {"jr", "jr.", "sr", "sr.", "ii", "iii", "iv", "v"}
+
     contacts = load_contacts()
     first_lower = first_name.strip().lower()
     last_lower = last_name.strip().lower()
 
-    matches = [
-        c for c in contacts
-        if c["FirstName"].strip().lower() == first_lower
-        and c["LastName"].strip().lower() == last_lower
-    ]
+    # If last_name is a suffix (e.g. "Jr."), fold it into first_name
+    if last_lower in _SUFFIXES:
+        first_lower = f"{first_lower} {last_lower}"
+        last_lower = ""
+
+    if not last_lower:
+        same_first = [
+            c for c in contacts
+            if c["FirstName"].strip().lower() == first_lower
+        ]
+        if not same_first:
+            return f"No contact found with first name '{first_name}'."
+        if len(same_first) == 1:
+            matches = same_first
+        else:
+            names = ", ".join(f"{c['FirstName']} {c['LastName']}" for c in same_first)
+            return f"Multiple contacts named {first_name} — which did you mean? {names}"
+    else:
+        matches = [
+            c for c in contacts
+            if c["FirstName"].strip().lower() == first_lower
+            and c["LastName"].strip().lower() == last_lower
+        ]
 
     if not matches:
+        same_first = [
+            c for c in contacts
+            if c["FirstName"].strip().lower() == first_lower
+        ]
+        if same_first:
+            suggestions = ", ".join(
+                f"{c['FirstName']} {c['LastName']}" for c in same_first
+            )
+            return (
+                f"No contact found for {first_name} {last_name}. "
+                f"Did you mean: {suggestions}?"
+            )
         return f"No contact found for {first_name} {last_name}."
 
     lines = []

@@ -5,7 +5,7 @@ An MCP (Model Context Protocol) server that lets Claude look up phone numbers by
 ## Requirements
 
 - Python 3.12+
-- A CSV file in the `info/` folder with columns: `FirstName`, `LastName`, `PhoneHome`, `PhoneMobile`, `PhoneWork`
+- A CSV file in the `info/` folder with columns: `FirstName`, `MiddleName`, `LastName`, `DisplayName`, `PhoneHome`, `PhoneMobile`, `PhoneWork`
 
 ## Setup
 
@@ -47,9 +47,17 @@ Then quit and relaunch Claude Desktop.
 
 Ask Claude naturally:
 
-> "I need the phone number for Mark Smith."
+> "What's the phone number for Mark Smith?"
 
 Claude will return the available home, mobile, and work numbers for that person.
+
+> "What's John's number?"
+
+If there is only one John, Claude returns their number directly. If there are multiple, Claude asks which one you mean.
+
+> "What's the number for Lucan Jr.?"
+
+Suffixes like Jr., Sr., II, III, IV are recognized and matched correctly regardless of how Claude parses the name.
 
 > "Who's phone number is this? 323-574-2262"
 
@@ -63,8 +71,10 @@ The `info/` folder should contain exactly one `.csv` file with the following col
 
 | Column | Description |
 |---|---|
-| `FirstName` | First name |
+| `FirstName` | First name (may include a suffix, e.g. `Lucan Jr.`) |
+| `MiddleName` | Middle name (not used by tools) |
 | `LastName` | Last name |
+| `DisplayName` | Full display name (not used by tools) |
 | `PhoneHome` | Home phone number |
 | `PhoneMobile` | Mobile phone number |
 | `PhoneWork` | Work phone number |
